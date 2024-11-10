@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2024b"><title>Instrumental Extractor</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre-wrap; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+.S1 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S2 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.CodeBlock { background-color: #F5F5F5; margin: 10px 15px 10px 0; display: inline-block }
+.S3 { border-left: 0.8px solid rgb(217, 217, 217); border-right: 0.8px solid rgb(217, 217, 217); border-top: 0.8px solid rgb(217, 217, 217); border-bottom: 0.8px solid rgb(217, 217, 217); border-radius: 4px; padding: 6px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S4 { border-left: 0.8px solid rgb(217, 217, 217); border-right: 0.8px solid rgb(217, 217, 217); border-top: 0.8px solid rgb(217, 217, 217); border-bottom: 0px none rgb(33, 33, 33); border-radius: 4px 4px 0px 0px; padding: 6px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S5 { border-left: 0.8px solid rgb(217, 217, 217); border-right: 0.8px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 0px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S6 { border-left: 0.8px solid rgb(217, 217, 217); border-right: 0.8px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 0.8px solid rgb(217, 217, 217); border-radius: 0px 0px 4px 4px; padding: 0px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }</style></head><body><div class = rtcContent><h1  class = 'S0'><span>Instrumental Extractor</span></h1><div  class = 'S1'><span>Copied from (with minor tweaks): </span></div><div  class = 'S1'><span>https://www.reddit.com/r/matlab/comments/1qrpzf/comment/cdfx67l/?utm_source=share&amp;utm_medium=web3x&amp;utm_name=web3xcss&amp;utm_term=1&amp;utm_content=share_button</span></div><h2  class = 'S2'><span>1. Read audio file in</span></h2><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S3'><span style="white-space: pre"><span >[Y, fs] = audioread(</span><span style="color: rgb(167, 9, 245);">"Will You Won't You Join The Dance (Mock Turtle Version).mp3"</span><span >);</span></span></div></div></div><h2  class = 'S2'><span>2. Set parameters</span></h2><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%Window length (choose power of 2 for quick DFT)</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >wl = 512;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%Step size (for overlap and account for windows)</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >step = 300;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%Window - hann gives good sound back</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >w = hann(wl);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%Filter out extremes</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >min = 0.7;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >max = 1.5;</span></span></div></div></div><h2  class = 'S2'><span>3. Filter vocals out</span></h2><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%Set up output array</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >out = zeros(size(Y));</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'>&nbsp;</div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">%i is starting index</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">for </span><span >i=1 : step : size(Y,1)-wl</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span><span style="color: rgb(0, 128, 19);">%Get data and window</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    dat = Y(i:i+wl-1,:).*[w,w];</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    datL = dat(:,1);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    datR = dat(:,2);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    fftL = fft(datL);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    fftR = fft(datR);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span><span style="color: rgb(0, 128, 19);">%Use this instead of for loop with if for faster processing</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    dif = abs(fftL ./ fftR);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    mask = ones(size(datL));</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    mask((min&lt;dif) &amp; (dif&lt;max)) = 0;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    fftL = fftL.*mask;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    fftR = fftR.*mask;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    lout = ifft(fftL);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    rout = ifft(fftR);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    datout = [lout,rout];</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    out(i:i+wl-1,:) = out(i:i+wl-1,:) + datout;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">end</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'>&nbsp;</div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >audiowrite(</span><span style="color: rgb(167, 9, 245);">'tmp.wav'</span><span >,out,fs)   </span></span></div></div></div><h2  class = 'S2'><span>4. Sanity check the instrumental</span></h2><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >[y2, Fs2] = audioread(</span><span style="color: rgb(167, 9, 245);">"tmp.wav"</span><span >);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >player = audioplayer(y2, Fs2);</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >play(player)</span></span></div></div></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Instrumental Extractor
+% Copied from (with minor tweaks): 
+% 
+% https://www.reddit.com/r/matlab/comments/1qrpzf/comment/cdfx67l/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+%% 1. Read audio file in
+
+[Y, fs] = audioread("Will You Won't You Join The Dance (Mock Turtle Version).mp3");
+%% 2. Set parameters
+
+%Window length (choose power of 2 for quick DFT)
+wl = 512;
+%Step size (for overlap and account for windows)
+step = 300;
+%Window - hann gives good sound back
+w = hann(wl);
+%Filter out extremes
+min = 0.7;
+max = 1.5;
+%% 3. Filter vocals out
+
+%Set up output array
+out = zeros(size(Y));
+
+%i is starting index
+for i=1 : step : size(Y,1)-wl
+    %Get data and window
+    dat = Y(i:i+wl-1,:).*[w,w];
+    datL = dat(:,1);
+    datR = dat(:,2);
+    fftL = fft(datL);
+    fftR = fft(datR);
+    %Use this instead of for loop with if for faster processing
+    dif = abs(fftL ./ fftR);
+    mask = ones(size(datL));
+    mask((min<dif) & (dif<max)) = 0;
+    
+    fftL = fftL.*mask;
+    fftR = fftR.*mask;
+    
+    lout = ifft(fftL);
+    rout = ifft(fftR);
+    
+    datout = [lout,rout];
+    
+    out(i:i+wl-1,:) = out(i:i+wl-1,:) + datout;
+end
+
+audiowrite('tmp.wav',out,fs)   
+%% 4. Sanity check the instrumental
+
+[y2, Fs2] = audioread("tmp.wav");
+player = audioplayer(y2, Fs2);
+play(player)
+##### SOURCE END #####
+-->
+</div></body></html>
